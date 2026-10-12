@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desafio das Garrafas</title>
+  <style>
+    body { font-family: Arial; text-align:center; margin-top:100px; }
+    button { margin:10px; padding:15px 30px; font-size:18px; }
+  </style>
+</head>
+<body>
+  <h1 id="txtGameTitle"></h1>
+  <button id="btnNovoGame" onclick="window.location.href='game.html'">Jogar Livre</button>
+  <button id="btnMissoes" onclick="window.location.href='missions.html'">Missões</button>
+  <button id="btnConfiguracao" onclick="window.location.href='configuration.html'">Configurações</button>
+  <button id="btnInstrucoes" onclick="window.location.href='instructions.html'">Instruções</button>
+
+<script>
+const strings = {
+      pt: { gameTitle: "Game DynaFluid: Desafio das Garrafas", pNovoGame: "Novo Jogo" , pMissoes: "Missões", pConfiguracao: "Configuração", pInstrucoes: "Instruções"},
+      en: { gameTitle: "Game DynaFluid: Bottle Challenge", pNovoGame: "New Game" , pMissoes: "Missions", pConfiguracao: "Configuration", pInstrucoes: "Instructionss"},
+      es: { gameTitle: "Game DynaFluid: Desafío de las botellas", pNovoGame: "Nuevo Juego" , pMissoes: "Missión", pConfiguracao: "Configuración", pInstrucoes: "Instruciones"},
+      fr: { gameTitle: "Game DynaFluid: Défi des bouteilles", pNovoGame: "Nouvelle partie" , pMissoes: "Missions", pConfiguracao: "Configuration", pInstrucoes: "Instructions"},
+      de: { gameTitle: "Game DynaFluid: Flaschen-Challenge", pNovoGame: "Neues Spiel" , pMissoes: "Missionen", pConfiguracao: "Einstellungen", pInstrucoes: "Anleitung"}
+    };
+
+    // Carregar idioma salvo
+    const lang = localStorage.getItem("language") || "pt";
+    const s = strings[lang];
+
+    // Atualizar textos da página
+    document.getElementById("txtGameTitle").textContent = s.gameTitle;
+    document.getElementById("btnNovoGame").textContent = s.pNovoGame;
+    document.getElementById("btnMissoes").textContent = s.pMissoes;
+    document.getElementById("btnConfiguracao").textContent = s.pConfiguracao;
+    document.getElementById("btnInstrucoes").textContent = s.pInstrucoes;
+  </script>
+</body>
+
+</html>

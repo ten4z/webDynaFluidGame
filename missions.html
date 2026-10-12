@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+<title>Dynafluid</title>
+ 
+<style>
+ body { font-family: Arial; margin:0; padding:20px; background:#f0f0f0; }
+    h1 { text-align:center; }
+    .lista { display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:10px; }
+    .missao { display:flex; align-items:center; justify-content:space-between; padding:10px; background:#fff; border:1px solid #ccc; }
+    .missao span { flex:1; }
+    .trofeu { width:24px; height:24px; margin-left:10px; }
+  
+    button { margin:10px; padding:15px 30px; font-size:18px; }
+
+ 
+</style>
+</head>
+ 
+<body>
+ 
+<h1 id="tituloPagina"></h1>
+ 
+<div class="menu">
+
+    <button id="btnLivre" onclick="window.location.href='index.html'">    
+    <button id="btnConfiguracao" onclick="window.location.href='configuration.html'">
+    <button id="btnInstrucoes" onclick="window.location.href='instructions.html'">
+
+       
+    
+</div>
+</div>
+ 
+<h2 id="subtitulo"></h2>
+ 
+<div class="lista" id="lista-missoes"></div>
+ 
+<script>
+ 
+/****************************************************
+IDIOMAS
+****************************************************/
+
+const strings = {
+
+pt:{
+title:"Missões",
+free:"Jogar Livre",
+configuration:"Configuração",
+instruction: "Instruções",
+subtitle:"Objetivos e Desafios do Game Dynafluid",
+mission:"Missão",
+objective:"Obtenha",
+bottle:"na garrafa",
+play:"Jogar"
+},
+
+en:{
+title:"Missions",
+free:"Free Play",
+configuration:"Configuration",
+instruction: "Instructions",
+subtitle:"Dynafluid Goals and Challenges",
+mission:"Mission",
+objective:"Get",
+bottle:"in bottle",
+play:"Play"
+},
+
+
+};
+
+/****************************************************
+IDIOMA ATUAL
+****************************************************/
+ 
+const lang =
+localStorage.getItem("language") || "pt";
+ 
+const s = strings[lang];
+ 
+
+const objetivos = [];
+ 
+// garrafa 8L
+for(let i=0;i<=8;i++){
+objetivos.push({
+garrafa:1,
+litros:i
+});
+}
+ 
+
+// garrafa 2 (5L)
+for(let i=0;i<=5;i++){
+objetivos.push({
+garrafa:2,
+litros:i
+});
+}
+
+// garrafa 3 (3L)
+for(let i=0;i<=3;i++){
+objetivos.push({
+garrafa:3,
+litros:i
+});
+}
+ 
+// completar até 100 missões
+ 
+while(objetivos.length < 25){
+ 
+const garrafa =
+Math.floor(Math.random() * 3) + 1;
+ 
+const max =
+garrafa === 1 ? 8 :
+garrafa === 2 ? 5 : 3;
+ 
+const litros =
+Math.floor(
+Math.random() * (max + 1)
+);
+ 
+objetivos.push({
+garrafa,
+litros
+});
+ 
+}
+
+function criarMissoes(){
+ 
+const lista =
+document.getElementById("lista-missoes");
+ 
+lista.innerHTML = "";
+ 
+objetivos.forEach((obj, index)=>{
+ 
+const numero =
+index + 1;
+ 
+const div =
+document.createElement("div");
+ 
+div.className = "missao";
+ 
+const span =
+document.createElement("span");
+ 
+span.textContent =
+`${s.mission} ${numero}: ${s.objective} ${obj.litros}L ${s.bottle} ${obj.garrafa}`;
+ 
+div.appendChild(span);
+ 
+const btn =
+document.createElement("button");
+ 
+btn.textContent =
+s.play;
+ 
+btn.onclick = ()=>{
+window.location.href =
+`game.html?missao=${numero}&garrafa=${obj.garrafa}&litros=${obj.litros}`;
+};
+ 
+div.appendChild(btn);
+ 
+const img =
+document.createElement("img");
+ 
+img.className =
+"trofeu";
+ 
+const concluida =
+localStorage.getItem(`missao${numero}`);
+ 
+img.src =
+concluida === "concluida"
+? "imagens/unlocked.png"
+: "imagens/locked.png";
+ 
+div.appendChild(img);
+ 
+lista.appendChild(div);
+ 
+});
+ 
+}
+
+/****************************************************/
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+document.getElementById("tituloPagina").textContent = s.title;
+document.getElementById("btnLivre").textContent = s.free;
+document.getElementById("btnConfiguracao").textContent = s.configuration;
+document.getElementById("btnInstrucoes").textContent = s.instruction;
+
+criarMissoes();
+
+});
+/****************************************************
+MISSÕES
+****************************************************/
+</script>
+ 
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Configuração - Climb Up Hanoi</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+    }
+    button { margin:10px; padding:15px 30px; font-size:18px; }
+    .menuBar {
+      width: 200px;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+
+    .config-container {
+      flex: 1;
+      padding: 30px;
+      background: #fff;
+    }
+    h1 { text-align: center; margin-bottom: 20px; }
+    select {
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="config-container">
+
+  <h1 id="title">Configuração</h1>
+
+  <div class="menuBarButtons">
+    <button id="btnNovoGame" onclick="window.location.href='game.html'">Jogar Livre</button>
+    <button id="btnMissoes" onclick="window.location.href='missions.html'">Missões</button>    
+    <button id="btnInstrucoes" onclick="window.location.href='instructions.html'">Instruções</button>
+  </div>
+
+  <br>
+  <label for="languageSelect" id="languageLabel">Selecione o idioma:</label>
+  <br>
+  <select id="languageSelect">
+    <option value="pt">Português</option>
+    <option value="en">English</option>    
+  </select>
+</div>
+
+<script>
+  // Strings para cada idioma
+  const strings = {
+    pt: {
+      title: "Configuração",
+      languageLabel: "Selecione o idioma:",
+      moves: "Movimentos",
+      victory: "Parabéns, você venceu o game com {discs} discos e {moves} movimentos válidos!<br>A quantidade mínima era {minMoves}."
+    },
+    en: {
+      title: "Settings",
+      languageLabel: "Select language:",
+      moves: "Moves",
+      victory: "Congratulations! You won the game with {discs} discs and {moves} valid moves!<br>The minimum was {minMoves}."
+    }
+  };
+
+
+const menuBarStrings = {
+  pt: {
+    home: "Início",    
+    achievements: "Conquistas",
+    missions: "Missões",
+    setup: "Configuração",
+    instructions: "Instruções"  
+  },
+  en: {
+    home: "Home",        
+    missions: "Missions",
+    setup: "Settings",
+    instructions: "Instructions"
+  }
+};
+
+  // Carregar idioma salvo
+  const savedLang = localStorage.getItem("language") || "pt";
+  document.getElementById("languageSelect").value = savedLang;
+  applyLanguage(savedLang);
+
+  // Alterar idioma
+  document.getElementById("languageSelect").addEventListener("change", (e) => {
+    const lang = e.target.value;
+    localStorage.setItem("language", lang);
+
+    applyLanguage(lang);
+  });
+
+  
+
+
+
+
+
+  function applyLanguage(lang) {
+  const s = strings[lang];
+  const sb = menuBarStrings[lang];
+
+  // Atualizar textos da página
+  document.getElementById("title").textContent = s.title;
+  document.getElementById("languageLabel").textContent = s.languageLabel;
+
+  // Atualizar menuBar
+  const links = document.querySelectorAll(".menuBarButtons button");
+  links[0].textContent = sb.home;    
+  links[1].textContent = sb.missions;  
+  links[2].textContent = sb.instructions;
+  
+}
+
+
+</script>
+</body>
+</html>

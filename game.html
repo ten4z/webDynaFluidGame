@@ -1,0 +1,779 @@
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Climb Up Hanoi</title>
+  <style>
+    /* Layout padrão (desktop) */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+#mensagem { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+                background:#fff; padding:20px; border:2px solid #000; display:none; }
+.setupBar{
+
+    position:fixed;
+
+    top:20px;
+    right:20px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:10px;
+
+    z-index:9999;
+}
+
+
+.victory {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 18px;
+  display: none;
+}
+
+
+/* Canvas ocupa todo espaço */
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none; /* impede scroll/zoom e libera eventos pointer */
+}
+
+/* Sidebar padrão (lateral esquerda) */
+.sidebar {
+  width: 150px;
+  min-width: 150px;
+  background: rgba(0,0,0,0.9);
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh; /* ocupa toda a altura */
+}
+
+.sidebar a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  padding: 12px;
+  margin: 6px 0;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Área do jogo */
+.game-container {
+  flex: 1;
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+  height: 100dvh;
+
+
+  flex: 1;
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+  height: 100dvh;
+}
+.setupBar{
+    #orbitToggle{
+
+    padding:12px;
+
+    border:none;
+    border-radius:8px;
+
+    background:#202020;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-family:Arial;
+  }
+}
+
+#orbitToggle.off{
+    background:#b71c1c;
+}
+
+
+#objetivo {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: clamp(14px, 3vw, 20px); /* aumenta em telas maiores, reduz em menores */
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Label de movimentos responsiva */
+
+  </style>
+
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./js/three/build/three.module.js"
+  }
+}
+</script>
+</head>
+<body>
+
+<div class="sidebar">
+<a href="index.html" id="menuHome"></a>
+<a href="missions.html" id="menuMissions"></a>
+<a href="configuration.html" id="menuConfig"></a>
+<a href="instructions.html" id="menuInstructions"></a>
+</div>
+<div class="setupBar">
+  <button id="orbitToggle">
+      Orbit: ON
+  </button>
+</div>
+<div class="game-container">  
+  <div id="objetivo">Objetivo: </div>
+  <div id="mensagem"></div>
+  <canvas id="game"></canvas>
+  <div class="victory" id="victoryMsg"></div>
+</div>
+
+
+
+
+<script type="module">
+    // ======================
+// Idiomas
+// ======================
+ 
+const lang = localStorage.getItem("language") || "pt";
+ 
+const i18n = {
+pt: {
+home: "Início",
+missions: "Missões",
+configuration: "Configuração",
+instructions: "Instruções",
+ 
+objective: "Objetivo",
+obtain: "Obtenha",
+bottle: "garrafa",
+ 
+orbitOn: "Orbit: ON",
+orbitOff: "Orbit: OFF",
+ 
+victory: "Parabéns você venceu este objetivo!"
+},
+ 
+en: {
+home: "Home",
+missions: "Missions",
+configuration: "Settings",
+instructions: "Instructions",
+ 
+objective: "Objective",
+obtain: "Get",
+bottle: "bottle",
+ 
+orbitOn: "Orbit: ON",
+orbitOff: "Orbit: OFF",
+ 
+victory: "Congratulations! You completed this objective!"
+},
+ 
+es: {
+home: "Inicio",
+missions: "Misiones",
+configuration: "Configuración",
+instructions: "Instrucciones",
+ 
+objective: "Objetivo",
+obtain: "Obtenga",
+bottle: "botella",
+ 
+orbitOn: "Órbita: ON",
+orbitOff: "Órbita: OFF",
+ 
+victory: "¡Felicidades! ¡Has completado este objetivo!"
+},
+ 
+fr: {
+home: "Accueil",
+missions: "Missions",
+configuration: "Configuration",
+instructions: "Instructions",
+ 
+objective: "Objectif",
+obtain: "Obtenez",
+bottle: "bouteille",
+ 
+orbitOn: "Orbite : ON",
+orbitOff: "Orbite : OFF",
+ 
+victory: "Félicitations ! Vous avez atteint cet objectif !"
+},
+ 
+de: {
+home: "Startseite",
+missions: "Missionen",
+configuration: "Einstellungen",
+instructions: "Anleitung",
+ 
+objective: "Ziel",
+obtain: "Erhalte",
+bottle: "Flasche",
+ 
+orbitOn: "Orbit: EIN",
+orbitOff: "Orbit: AUS",
+ 
+victory: "Glückwunsch! Du hast dieses Ziel erreicht!"
+}
+};
+ 
+const t = i18n[lang];
+
+document.getElementById("menuHome").textContent = t.home;
+document.getElementById("menuMissions").textContent = t.missions;
+document.getElementById("menuConfig").textContent = t.configuration;
+document.getElementById("menuInstructions").textContent = t.instructions;
+
+
+
+
+
+    import * as THREE from "three";
+    import { OrbitControls } from "./js/three/jsm/controls/OrbitControls.js";
+    import { OBJLoader } from "./js/three/jsm/loaders/OBJLoader.js";
+    import { MTLLoader } from "./js/three/jsm/loaders/MTLLoader.js";
+
+
+
+const canvas = document.getElementById('game');
+
+const renderer = new THREE.WebGLRenderer({canvas});
+
+
+const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+camera.position.set(-7, 7, 12);
+camera.lookAt(0, 0, 0);
+
+const sidebar = document.querySelector(".sidebar");
+
+
+const width = window.innerWidth - sidebar.offsetWidth;
+const height = window.innerHeight;
+renderer.setSize(width, height);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+const orbitButton = document.getElementById("orbitToggle");
+
+
+orbitButton.addEventListener("click", () => {
+    controls.enabled = !controls.enabled;
+    orbitButton.textContent = controls.enabled ? t.orbitOn : t.orbitOff;
+    orbitButton.classList.toggle("off", !controls.enabled);
+});
+
+orbitButton.textContent = t.orbitOn;
+
+camera.aspect = width / height;
+camera.updateProjectionMatrix();
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xffffff);
+
+
+
+
+const light = new THREE.DirectionalLight(0xffffff,1);
+light.position.set(5,10,5);
+scene.add(light);
+
+// Ler parâmetros da URL
+function getParams() {
+  const params = {};
+  window.location.search.substring(1).split("&").forEach(p=>{
+    const [key,val] = p.split("=");
+    params[key] = val;
+  });
+  return params;
+}
+const params = getParams();
+const garrafaObjetivo = parseInt(params.garrafa || "2");
+const litrosObjetivo = parseInt(params.litros || "4");
+
+
+const objectiveText = {
+pt: `Objetivo: Obtenha ${litrosObjetivo}L na garrafa ${garrafaObjetivo}`,
+en: `Objective: Get ${litrosObjetivo}L in bottle ${garrafaObjetivo}`,
+es: `Objetivo: Obtenga ${litrosObjetivo}L en la botella ${garrafaObjetivo}`,
+fr: `Objectif : Obtenez ${litrosObjetivo}L dans la bouteille ${garrafaObjetivo}`,
+de: `Ziel: Erhalte ${litrosObjetivo}L in Flasche ${garrafaObjetivo}`
+};
+ 
+document.getElementById("objetivo").innerText = objectiveText[lang];
+
+scene.background = new THREE.Color(0xf0f0f0);
+
+scene.add(new THREE.AmbientLight(0x888888));
+const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+dirLight.position.set(5,10,7);
+scene.add(dirLight);
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const garrafas = [];
+
+function criarTexto(texto) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.font = '28px Arial';
+  ctx.fillStyle = 'black';
+  ctx.fillText(texto, 10, 40);
+  return new THREE.CanvasTexture(canvas);
+}
+
+function criarLabel(texto, x, y) {
+  const material = new THREE.SpriteMaterial({ map: criarTexto(texto) });
+  const sprite = new THREE.Sprite(material);
+  sprite.position.set(x, y, 0);
+  sprite.scale.set(4, 1.5, 1);
+  scene.add(sprite);
+  return sprite;
+}
+
+function criarGarrafa(x, capacidade, volumeInicial=0) {
+  const group = new THREE.Group();
+
+  // se for a garrafa de 8L, ajusta proporções
+  let raioBase = 1;
+  let altura = capacidade;
+
+  if (capacidade === 8) {
+    raioBase = 1.3;       // mais gordinha
+    altura = capacidade * 0.8; // um pouco mais baixa
+  }
+
+  // corpo da garrafa
+  const corpo = new THREE.Mesh(
+    new THREE.CylinderGeometry(raioBase, raioBase, altura, 32),
+    new THREE.MeshPhongMaterial({
+      color:0x66ccff, transparent:true, opacity:0.25,
+      side:THREE.DoubleSide, depthWrite:false
+    })
+  );
+  corpo.position.y = altura/2;
+  group.add(corpo);
+
+  // gargalo
+  const gargalo = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.4, 0.4, 1, 32),
+    new THREE.MeshPhongMaterial({color:0x66ccff, transparent:true, opacity:0.25})
+  );
+  gargalo.position.y = altura + 0.5;
+  group.add(gargalo);
+
+  // líquido interno
+  const liquido = new THREE.Mesh(
+    new THREE.CylinderGeometry(raioBase*0.9, raioBase*0.9, altura, 32),
+    new THREE.MeshPhongMaterial({color:0x000066, transparent:true, opacity:0.8})
+  );
+  group.add(liquido);
+
+  group.position.x = x;
+  scene.add(group);
+
+  const label = criarLabel(`${volumeInicial} L`, x, -1);
+  group.userData = { capacidade, volume: volumeInicial, liquidoMesh: liquido, label, altura };
+  atualizarLiquido(group);
+  garrafas.push(group);
+}
+
+function atualizarLiquido(garrafa) {
+  const mesh = garrafa.userData.liquidoMesh;
+  const capacidade = garrafa.userData.capacidade;
+  const volume = garrafa.userData.volume;
+  const escala = (volume / capacidade) || 0.0001;
+  mesh.scale.y = escala;
+  mesh.position.y = (escala * mesh.geometry.parameters.height) / 2;
+
+  garrafa.userData.label.material.map = criarTexto(`${volume.toFixed(1)} L`);
+  garrafa.userData.label.material.map.needsUpdate = true;
+}
+
+function atualizarLiquidoAnimado(garrafa, novoVolume) {
+  const inicio = garrafa.userData.volume;
+  const fim = novoVolume;
+  const duracao = 30;
+  let frame = 0;
+
+  function animar() {
+    frame++;
+    const t = frame / duracao;
+    garrafa.userData.volume = inicio + (fim - inicio) * t;
+    atualizarLiquido(garrafa);
+    if (frame < duracao) requestAnimationFrame(animar);
+    else validarMissao();
+  }
+  animar();
+}
+
+// Carregar sons
+const somMovimento = new Audio("audios/movimento.mp3");
+const somConquista = new Audio("audios/conquista.mp3");
+
+function transferirAgua(origem, destino) {
+  const capacidadeDestino = destino.userData.capacidade;
+  const volumeDestino = destino.userData.volume;
+  const volumeOrigem = origem.userData.volume;
+  const espacoDisponivel = capacidadeDestino - volumeDestino;
+  const quantidadeTransferida = Math.min(volumeOrigem, espacoDisponivel);
+
+  if (quantidadeTransferida <= 0) return;
+
+  // toca som de movimento
+  somMovimento.currentTime = 0;
+  somMovimento.play();
+
+  atualizarLiquidoAnimado(origem, origem.userData.volume - quantidadeTransferida);
+  atualizarLiquidoAnimado(destino, destino.userData.volume + quantidadeTransferida);
+}
+
+function validarMissao() {
+  const alvo = garrafas[garrafaObjetivo-1];
+  if (Math.round(alvo.userData.volume) === litrosObjetivo) {
+    document.getElementById("mensagem").innerText = t.victory;
+    document.getElementById("mensagem").style.display = "block";
+
+    // toca som de conquista
+    somConquista.currentTime = 0;
+    somConquista.play();
+
+    localStorage.setItem(`missao${params.missao}`, "concluida");
+  }
+}
+
+// criar garrafas [8,5,3]
+criarGarrafa(-6, 8, 8); // cheia
+criarGarrafa(0, 5, 0);  // vazia
+criarGarrafa(6, 3, 0);  // vazia
+
+const linhaTransferencia =
+new THREE.Line(
+ 
+new THREE.BufferGeometry(),
+ 
+new THREE.LineBasicMaterial({
+color: 0x00ff00
+})
+ 
+);
+ 
+linhaTransferencia.visible = false;
+ 
+scene.add(
+linhaTransferencia
+);
+
+function getCoords(x, y) {
+ 
+const rect =
+renderer.domElement.getBoundingClientRect();
+ 
+mouse.x =
+((x - rect.left) / rect.width) * 2 - 1;
+ 
+mouse.y =
+-((y - rect.top) / rect.height) * 2 + 1;
+}
+ 
+let origem = null;
+ 
+function encontrarGarrafa(x, y) {
+ 
+getCoords(x, y);
+ 
+raycaster.setFromCamera(
+mouse,
+camera
+);
+ 
+const hits =
+raycaster.intersectObjects(
+garrafas.flatMap(
+g => g.children
+),
+true
+);
+ 
+if (!hits.length)
+return null;
+ 
+return hits[0].object.parent;
+}
+ 
+function destacarGarrafa(
+garrafa,
+ativo
+) {
+ 
+garrafa.traverse(obj => {
+ 
+if (!obj.material)
+return;
+ 
+if (ativo) {
+ 
+obj.material.emissive =
+new THREE.Color(
+0x00ff00
+);
+ 
+} else {
+ 
+obj.material.emissive =
+new THREE.Color(
+0x000000
+);
+ 
+}
+ 
+});
+ 
+}
+ 
+function selecionarOrigem(x, y) {
+ 
+if (controls.enabled)
+return;
+ 
+origem =
+encontrarGarrafa(
+x,
+y
+);
+ 
+if (origem) {
+ 
+destacarGarrafa(
+origem,
+true
+);
+ 
+}
+ 
+}
+ 
+function selecionarDestino(x, y) {
+ 
+if (controls.enabled)
+return;
+ 
+const destino =
+encontrarGarrafa(
+x,
+y
+);
+ 
+if (
+origem &&
+destino &&
+destino !== origem
+) {
+ 
+transferirAgua(
+origem,
+destino
+);
+ 
+}
+ 
+if (origem) {
+ 
+destacarGarrafa(
+origem,
+false
+);
+ 
+}
+ 
+origem = null;
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  renderer.render(scene,camera);
+}
+animate();
+
+
+window.addEventListener(
+"touchstart",
+e => {
+ 
+if (controls.enabled)
+return;
+ 
+const t =
+e.touches[0];
+ 
+selecionarOrigem(
+t.clientX,
+t.clientY
+);
+ 
+if (origem) {
+ 
+linhaTransferencia.visible =
+true;
+ 
+}
+ 
+}
+);
+
+window.addEventListener(
+"touchmove",
+e => {
+ 
+if (
+controls.enabled ||
+!origem
+)
+return;
+ 
+const t =
+e.touches[0];
+ 
+getCoords(
+t.clientX,
+t.clientY
+);
+ 
+raycaster.setFromCamera(
+mouse,
+camera
+);
+ 
+const ponto =
+new THREE.Vector3();
+ 
+ponto.copy(
+raycaster.ray.direction
+);
+ 
+ponto.multiplyScalar(
+15
+);
+ 
+ponto.add(
+raycaster.ray.origin
+);
+ 
+linhaTransferencia.geometry
+.setFromPoints([
+origem.position,
+ponto
+]);
+ 
+}
+);
+
+window.addEventListener(
+"touchend",
+e => {
+ 
+if (controls.enabled)
+return;
+ 
+const t =
+e.changedTouches[0];
+ 
+selecionarDestino(
+t.clientX,
+t.clientY
+);
+ 
+linhaTransferencia.visible =
+false;
+ 
+}
+);
+
+window.addEventListener(
+"mousedown",
+e => {
+ 
+if (
+e.button !== 0 ||
+controls.enabled
+) return;
+ 
+selecionarOrigem(
+e.clientX,
+e.clientY
+);
+ 
+}
+);
+ 
+window.addEventListener(
+"mouseup",
+e => {
+ 
+if (
+e.button !== 0 ||
+controls.enabled
+) return;
+ 
+selecionarDestino(
+e.clientX,
+e.clientY
+);
+ 
+}
+);
+
+
+window.addEventListener("resize",()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+
+
+ </script>
+</body>
+</html>

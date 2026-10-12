@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instruções - Desafio das Garrafas</title>
+  <style>
+    body { font-family: Arial; margin:0; padding:20px; background:#f9f9f9; }
+    h1 { text-align:center; }
+    ul { max-width:600px; margin:20px auto; line-height:1.6; }
+    li { margin-bottom:10px; }
+    #voltar { display:block; margin:20px auto; padding:10px 20px; font-size:18px; }
+  </style>
+</head>
+<body>
+  <h1 id="txtGameTitle">Instruções do Jogo</h1>
+  <p id="txtTitulo"style="text-align:center;">    
+  </p>
+  <ul>    
+    <li id="txtDescriptionA"></li>
+    <li id="txtInstructionsA"></li>
+    <li id="txtInstructionsB"></li>
+    <li id="txtInstructionsC"></li>
+    <li id="txtInstructionsD"></li>
+  </ul>
+
+  <h2 id="txtDescriptionB"style="text-align:center;"></h2>
+  
+  <p id="txtDescriptionC" style="max-width:600px; margin:0 auto; line-height:1.6;">
+    
+  </p>
+  <ol style="max-width:600px; margin:20px auto; line-height:1.6;">
+    <li id="txtPassoA"></li>
+    <li id="txtPassoB"></li>
+    <li id="txtPassoC"></li>
+    <li id="txtPassoD"></li>
+    <li id="txtPassoE"></li>
+    
+  </ol>
+
+  <p id="txtResult" style="text-align:center; font-weight:bold;">
+    
+  </p>
+
+  <button id="voltar" onclick="window.location.href='index.html'">Voltar ao Menu</button>
+<script>
+  const strings = {
+ 
+pt:{
+  gameTitle: "Game DynaFluid: Desafio das Garrafas",
+  title:"Instruções do Jogo",
+  descriptionA:"Bem-vindo ao Desafio das Garrafas! Aqui estão algumas dicas para jogar:",
+  instructionA: "Clique em uma garrafa para selecioná-la como origem.",
+  instructionB: "Clique em outra garrafa para transferir a água até o limite da capacidade.",
+  instructionC: "O objetivo é atingir a quantidade exata de litros indicada na missão.",
+  instructionD: "Planeje bem os movimentos, pois alguns objetivos exigem várias transferências.",
+  descriptionB: "Dica Especial: Obter 7L na garrafa de 8L",
+  descriptionC: "Este é considerado um dos puzzles mais difíceis do jogo. Aqui vai uma sequência possível:",
+  txtPassosA: "Encha a garrafa de 3L a partir da garrafa de 8L (fica 5L na de 8L, 3L na de 3L).",
+  txtPassosB: "Despeje a garrafa de 3L na garrafa de 5L (fica 5L na de 5L, 0L na de 3L, 5L na de 8L).",
+  txtPassosC: "Encha novamente a garrafa de 3L a partir da de 8L (fica 2L na de 8L, 3L na de 3L).", 
+  txtPassosD: "Transfira da garrafa de 3L para completar a de 5L (fica 5L na de 5L, 0L na de 3L, 4L na de 8L).",
+  txtPassosE: "Despeje a garrafa de 5L de volta na de 8L (fica 9L, mas como o limite é 8L, sobra 7L na de 8L).",
+  txtResult: "Resultado: A garrafa de 8L termina com exatamente 7 litros!"
+  
+},
+ 
+en:{
+  gameTitle: "Game DynaFluid: Bottle Challenge",
+  title: "Game Instructions",
+  descriptionA: "Welcome to the Bottle Challenge! Here are some tips on how to play:",
+  instructionA: "Click on a bottle to select it as the source.",
+  instructionB: "Click on another bottle to transfer water up to its capacity limit.",
+  instructionC: "The goal is to reach the exact amount of liters specified in the mission.",
+  instructionD: "Plan your moves carefully, as some objectives require multiple transfers.",
+  descriptionB: "Special Tip: Getting 7L in the 8L bottle",
+  descriptionC: "This is considered one of the game's hardest puzzles. Here is one possible sequence:",
+  txtPassosA: "Fill the 3L bottle from the 8L bottle (leaving 5L in the 8L bottle and 3L in the 3L bottle).",
+  txtPassosB: "Pour the 3L bottle into the 5L bottle (resulting in 5L in the 5L bottle, 0L in the 3L bottle, and 5L in the 8L bottle).",
+  txtPassosC: "Refill the 3L bottle from the 8L bottle (leaving 2L in the 8L bottle and 3L in the 3L bottle).",
+  txtPassosD: "Transfer water from the 3L bottle to fill the 5L bottle (resulting in 5L in the 5L bottle, 0L in the 3L bottle, and 4L in the 8L bottle).",
+  txtPassosE: "Pour the 5L bottle back into the 8L bottle (this would total 9L, but since the limit is 8L, 7L remains in the 8L bottle).",
+  txtResult: "Result: The 8L bottle ends up with exactly 7 liters!"
+}
+
+};
+ 
+/****************************************************
+IDIOMA ATUAL
+****************************************************/
+ 
+const lang =
+localStorage.getItem("language") || "pt";
+ 
+const s = strings[lang];
+ 
+
+
+/****************************************************/
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+ 
+
+document.getElementById("txtGameTitle").textContent = s.gameTitle;
+document.getElementById("txtTitulo").textContent = s.title;
+document.getElementById("txtDescriptionA").textContent = s.descriptionA;
+document.getElementById("txtInstructionsA").textContent = s.instructionA;
+document.getElementById("txtInstructionsB").textContent = s.instructionB;
+document.getElementById("txtInstructionsC").textContent = s.instructionC;
+document.getElementById("txtInstructionsD").textContent = s.instructionD;
+document.getElementById("txtDescriptionB").textContent = s.descriptionB;
+document.getElementById("txtDescriptionC").textContent = s.descriptionC;
+document.getElementById("txtPassoA").textContent = s.txtPassosA;
+document.getElementById("txtPassoB").textContent = s.txtPassosB;
+document.getElementById("txtPassoC").textContent = s.txtPassosC;
+document.getElementById("txtPassoD").textContent = s.txtPassosD;
+document.getElementById("txtPassoE").textContent = s.txtPassosE;
+document.getElementById("txtResult").textContent = s.txtResult;
+
+})
+</script>
+</body>
+</html>
